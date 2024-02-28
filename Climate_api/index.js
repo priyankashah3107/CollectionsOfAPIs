@@ -5,56 +5,56 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 
 const app = express();
-const stroeArticals = []; 
+let stroeArticals = []; 
 
 // Fetching Climate Data from multiple source 
 
-const newspapers = [
+let newspapers = [
      
   {
-    title: "who",
+    name: "who",
     address: "https://www.who.int/news-room/fact-sheets/detail/climate-change-and-health",
     base: ''
 
   },
 
     {
-      title: "TheGudian",
+      name: "TheGudian",
       address: "https://www.theguardian.com/environment/climate-crisis",
       base: ''
 
     },
 
     {
-      title: "CNN",
+      name: "CNN",
       address: "https://edition.cnn.com/world/cnn-climate",
       base: ''
 
     },
      
     {
-      title: "UnitedNations",
+      name: "UnitedNations",
       address: "https://news.un.org/en/news/topic/climate-change",
       base: ''
 
     },
 
     {
-      title: "TheHindu",
+      name: "TheHindu",
       address: "https://www.thehindu.com/sci-tech/energy-and-environment/",
       base: ''
 
     },
 
     {
-      title: "NYTimes",
+      name: "NYTimes",
       address: "https://www.thehindu.com/sci-tech/energy-and-environment/",
       base: ''
 
     },
 
     {
-      title: "climatechangenews",
+      name: "climatechangenews",
       address: "https://www.climatechangenews.com/",
       base: ''
 
@@ -62,7 +62,7 @@ const newspapers = [
 
     
     {
-      title: "nbcnews",
+      name: "nbcnews",
       address: "https://www.nbcnews.com/climate-in-crisis",
       base: ''
 
@@ -75,12 +75,12 @@ const newspapers = [
     },
 
     {
-      name: "The Economics Times",
+      name: "TheEconomicsTimes",
       address: "https://economictimes.indiatimes.com/topic/climate-change",
       base: ''
     },
     {
-      name: "Telegraph",
+      name: "telegraph",
       address: "https://www.telegraph.co.uk/climate-change/",
       base: 'https://www.telegraph.co.uk'
     }
@@ -142,6 +142,47 @@ app.get("/news", (req, res) => {
     res.json(stroeArticals)
 
 });
+
+// Now I want to getting the information form the Individual news Sources
+
+app.get("/news/:newspaperId", (req, res) => {
+      const newspaperId = req.params.newspaperId;   
+      // // console.log(newspaperId)
+      // const newspaperAddress = newspapers.filter(newspaper => newspaper.name === newspaperId)
+      let newspaperAddress = newspapers.filter(newspaper => newspaper.name === newspaperId)[0].address;
+      let newspaperBase = newspapers.filter(newspaper => newspaper.name === newspaperId)[0].base
+
+      // // console.log(newspaperBase)
+      // // console.log(newspaperAddress)
+
+   
+
+      axios.get(newspaperAddress)
+         
+           .then(response => {
+             const html = response.data;
+
+             const $ = cheerio.load(html)
+             let specificArticle = []
+             $('a:contains("climate")', html).each( function() {
+                
+
+                const title = $(this).text().trim().replace(/\s+/g, ' ');
+                const url = $(this).attr('href')
+
+                specificArticle.push({
+                  title,
+                  url: newspaperBase + url,
+                   source: newspaperId
+                })
+             })
+             res.json(specificArticle)
+           })
+           .catch((err) =>{
+            console.log(err)
+           })
+        
+})
 
 app.listen(PORT, () => {
   console.log(`App is running on http://localhost:${PORT}`);

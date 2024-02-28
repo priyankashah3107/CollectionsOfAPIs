@@ -102,7 +102,10 @@ newspapers.forEach(newspaper => {
 
           stroeArticals.push({
             title,
-            url,
+            // url,
+            url: newspaper.base + url,
+            source: newspaper.name
+
           })
       })
 
@@ -172,7 +175,7 @@ app.get("/news/:newspaperId", (req, res) => {
 
                 specificArticle.push({
                   title,
-                  url: newspaperBase + url,
+                  url: newspaperBase !== '' ? newspaperBase + url : url,
                    source: newspaperId
                 })
              })

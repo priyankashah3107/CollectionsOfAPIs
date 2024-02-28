@@ -6,6 +6,89 @@ const cheerio = require("cheerio");
 
 const app = express();
 const stroeArticals = []; 
+
+// Fetching Climate Data from multiple source 
+
+const newspapers = [
+     
+  {
+    title: "who",
+    url: "https://www.who.int/news-room/fact-sheets/detail/climate-change-and-health",
+    base: ''
+
+  },
+
+    {
+      title: "TheGudian",
+      url: "https://www.theguardian.com/environment/climate-crisis",
+      base: ''
+
+    },
+
+    {
+      title: "CNN",
+      url: "https://edition.cnn.com/world/cnn-climate",
+      base: ''
+
+    },
+     
+    {
+      title: "UnitedNations",
+      url: "https://news.un.org/en/news/topic/climate-change",
+      base: ''
+
+    },
+
+    {
+      title: "TheHindu",
+      url: "https://www.thehindu.com/sci-tech/energy-and-environment/",
+      base: ''
+
+    },
+
+    {
+      title: "NYTimes",
+      url: "https://www.thehindu.com/sci-tech/energy-and-environment/",
+      base: ''
+
+    },
+
+    {
+      title: "climatechangenews",
+      url: "https://www.climatechangenews.com/",
+      base: ''
+
+    },
+
+    
+    {
+      title: "nbcnews",
+      url: "https://www.nbcnews.com/climate-in-crisis",
+      base: ''
+
+    },
+  
+    {
+      name: "The Times",
+      address: "https://www.thetimes.co.uk/environment/climate-change",
+      base: ''
+    },
+
+    {
+      name: "The Economics Times",
+      address: "https://economictimes.indiatimes.com/topic/climate-change",
+      base: ''
+    },
+    {
+      name: "Telegraph",
+      address: "https://www.telegraph.co.uk/climate-change/",
+      base: 'https://www.telegraph.co.uk'
+    }
+
+]
+
+
+
 app.get("/", (req, res) => {
   res.json("Hola! Welcome to Climate change API");
 });
@@ -14,7 +97,7 @@ app.get("/news", (req, res) => {
  
 
   // axios.get("https://science.nasa.gov/climate-change/")
-  axios.get("https://www.theguardian.com/environment/climate-crisis")
+  axios.get("https://www.telegraph.co.uk/climate-change/")
     .then(response => {
       const html = response.data;
       const $ = cheerio.load(html);

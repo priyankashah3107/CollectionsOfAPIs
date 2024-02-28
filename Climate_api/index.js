@@ -13,49 +13,49 @@ const newspapers = [
      
   {
     title: "who",
-    url: "https://www.who.int/news-room/fact-sheets/detail/climate-change-and-health",
+    address: "https://www.who.int/news-room/fact-sheets/detail/climate-change-and-health",
     base: ''
 
   },
 
     {
       title: "TheGudian",
-      url: "https://www.theguardian.com/environment/climate-crisis",
+      address: "https://www.theguardian.com/environment/climate-crisis",
       base: ''
 
     },
 
     {
       title: "CNN",
-      url: "https://edition.cnn.com/world/cnn-climate",
+      address: "https://edition.cnn.com/world/cnn-climate",
       base: ''
 
     },
      
     {
       title: "UnitedNations",
-      url: "https://news.un.org/en/news/topic/climate-change",
+      address: "https://news.un.org/en/news/topic/climate-change",
       base: ''
 
     },
 
     {
       title: "TheHindu",
-      url: "https://www.thehindu.com/sci-tech/energy-and-environment/",
+      address: "https://www.thehindu.com/sci-tech/energy-and-environment/",
       base: ''
 
     },
 
     {
       title: "NYTimes",
-      url: "https://www.thehindu.com/sci-tech/energy-and-environment/",
+      address: "https://www.thehindu.com/sci-tech/energy-and-environment/",
       base: ''
 
     },
 
     {
       title: "climatechangenews",
-      url: "https://www.climatechangenews.com/",
+      address: "https://www.climatechangenews.com/",
       base: ''
 
     },
@@ -63,13 +63,13 @@ const newspapers = [
     
     {
       title: "nbcnews",
-      url: "https://www.nbcnews.com/climate-in-crisis",
+      address: "https://www.nbcnews.com/climate-in-crisis",
       base: ''
 
     },
   
     {
-      name: "The Times",
+      name: "Thetimes",
       address: "https://www.thetimes.co.uk/environment/climate-change",
       base: ''
     },
@@ -87,7 +87,27 @@ const newspapers = [
 
 ]
 
+// travering on each oject so we can easily get the value of everyObect
 
+newspapers.forEach(newspaper => {
+    axios.get(newspaper.address)  // getting each links 
+    .then(response => {
+      const html = response.data;
+
+      const $ = cheerio.load(html)
+
+      $('a:contains("climate")', html).each( function () {
+          const title = $(this).text().trim().replace(/\s+/g, ' ');
+          const url = $(this).attr('href');
+
+          stroeArticals.push({
+            title,
+            url,
+          })
+      })
+
+    })
+})
 
 app.get("/", (req, res) => {
   res.json("Hola! Welcome to Climate change API");
@@ -97,27 +117,30 @@ app.get("/news", (req, res) => {
  
 
   // axios.get("https://science.nasa.gov/climate-change/")
-  axios.get("https://www.telegraph.co.uk/climate-change/")
-    .then(response => {
-      const html = response.data;
-      const $ = cheerio.load(html);
+  // axios.get("https://www.telegraph.co.uk/climate-change/")
+  //   .then(response => {
+  //     const html = response.data;
+  //     const $ = cheerio.load(html);
 
-      $('a:contains("climate")', html).each(function () {
-        const title = $(this).text().trim();
-        const url = $(this).attr('href');
+  //     $('a:contains("climate")', html).each(function () {
+  //       const title = $(this).text().trim();
+  //       const url = $(this).attr('href');
 
-        stroeArticals.push({
-          title,
-          url
-        });
-      });
+  //       stroeArticals.push({
+  //         title,
+  //         url
+  //       });
+  //     });
 
-      res.json(stroeArticals);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: "Internal Server Error" });
-    });
+    //   res.json(stroeArticals);
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    //   res.status(500).json({ error: "Internal Server Error" });
+    // });
+     
+    res.json(stroeArticals)
+
 });
 
 app.listen(PORT, () => {

@@ -155,6 +155,44 @@ app.get('/recipe', async (req, res) => {
 
 
 
+app.get("/recipe/:recipeId", (req, res) => {
+
+   const recipeId = req.params.recipeId;
+  //  console.log(recipeId)
+  const individualRecipe = []
+   const particularRecipe = allcountryrecipe.find( recipe => recipe.name === recipeId)
+   // base case 
+
+   if(!particularRecipe) {
+    res.status(404).json({error: "Recipe not Found"});
+   }
+
+   const particularAddress = particularRecipe.address;
+    // console.log(particularAddress)
+    const particularBase = particularRecipe.base
+    axios.get(particularAddress) 
+             .then(response => {
+                const html = response.data;
+                const $ = cheerio.load(html)
+                 
+                $('a:contains("recipe")', html).each( function() {
+                    const title = $(this).text().trim().replace(/\s+/g, " ");
+                    const url = $(this).attr('href')
+
+                      individualRecipe.push({
+                        title,
+                        url: particularBase !== ' ' ? particularBase + url : url,
+                        source: recipeId
+                      })
+                })
+
+                res.json(individualRecipe)
+             })
+
+             .catch((err) => {
+                  console.log(err.message)
+             })
+})
 
 
 

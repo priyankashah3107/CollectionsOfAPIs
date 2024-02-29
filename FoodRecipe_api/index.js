@@ -9,20 +9,22 @@ dotenv.config()
 const port = process.env.PORT || 7777;
 
 const app = express()
+app.use(express.json())
 let recipes = []
+let recipeCollections = []
 
-let recipeCollections = [
+let allcountryrecipe = [
 
   {
     name: "IndianFood",
     address: "https://www.vegrecipesofindia.com/recipes/",
-    base: ""
+    base: ''
   },
 
   {
     name: "EuropianFood",
     address: "https://www.theguardian.com/tone/recipes",
-    base: ""
+    base: ''
   },
 
   {
@@ -88,13 +90,13 @@ let recipeCollections = [
   {
     name: "AustralianFood",
     address: "https://www.deliciousmagazine.co.uk/cuisine/australian-recipes/",
-    base: ""
+    base: ''
   },
 
   {
     name: "VeganFood",
     address: "https://www.loveandlemons.com/vegan-recipes/",
-    base: ""
+    base: ''
   },
 
   {
@@ -104,34 +106,57 @@ let recipeCollections = [
   },
 ]
 
+// travse on each object 
+
+
+const fetchRecipes = async () => {
+  try {
+
+    await Promise.all(allcountryrecipe.map(async (collectionsrecipe) => {
+
+      const response = await axios.get(collectionsrecipe.address);
+         
+      const html = response.data
+      const $ = cheerio.load(html)
+
+        $('a:contains("recipe")', html).each( function() {
+            
+          let title = $(this).text().trim().replace(/\s+/g, ' ');
+        const url = $(this).attr('href')
+           
+        recipeCollections.push({
+          title, 
+          url: collectionsrecipe.base + url,
+          source: collectionsrecipe.name
+        })
+
+        })
+    }))
+    
+  } catch (error) {
+     console.log("Error while Fetching the recipes", error.message)
+  }
+}
+
+
+
+
+
 app.get("/", (req, res) => {
    res.send(`<h1> Hiiiiiiiiii Welcome to my Food Recippeee API `)
 })
 
-app.get('/recipe', (req, res) => {
-    axios.get("https://cooking.nytimes.com/topics/vegetarian")
-             .then(response => {
-              const html  = response.data;
-              // console.log(html)
-              // using cheerio to read the html contains from website
-             
-              const $ = cheerio.load(html)
 
-              $(`a:contains("recipe")`, html).each( function() {
-                const title =  $(this).text().trim()
-                const url = $(this).attr('href')
-                const absoluteUrl = url.startsWith('/') ? `https://www.theguardian.com${url}` : url;
+app.get('/recipe', async (req, res) => {
+  // Calling fetchRecipes and wait for it to complete
+  await fetchRecipes();
+  res.json(recipeCollections);
+});
 
-                recipes.push({
-                  title, 
-                  url: absoluteUrl
-                })
-              })
 
-              res.json(recipes)
 
-             })
-})
+
+
 
 app.listen(port, () => {
   console.log(`This is Running of PORT http://localhost:${port}`)

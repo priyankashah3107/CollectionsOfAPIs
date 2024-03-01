@@ -155,8 +155,8 @@ app.get("/news/:newspaperId", (req, res) => {
       let newspaperAddress = newspapers.filter(newspaper => newspaper.name === newspaperId)[0].address;
       let newspaperBase = newspapers.filter(newspaper => newspaper.name === newspaperId)[0].base
 
-      // // console.log(newspaperBase)
-      // // console.log(newspaperAddress)
+      // console.log(newspaperBase)
+      // console.log(newspaperAddress)
 
    
 

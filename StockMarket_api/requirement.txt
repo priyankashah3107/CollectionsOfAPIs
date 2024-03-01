@@ -1,0 +1,15 @@
+BSE and NSE
+DataScripping for 
+
+  symbol: stockData[akdfjadkf],
+        opening
+        closingtime
+        high
+        low
+        price
+        volume/quantity
+        latestTradingDay =  stockData[ latest trading day],
+        previousClose=  stockData[ previous close],
+        change: stockData[ change],
+        changePercent stockData[change percent],  // Graphical repre.. or dashboard
+        
